@@ -1,13 +1,14 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
+import { updateButton, deleteButton } from "../handlers/handleFetch/fetch";
+import { colors } from "../handlers/constants/colors";
 
 export default function Settings() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  //if there is no data is passed
   useEffect(() => {
     if (!location.state) {
       navigate("/");
@@ -19,10 +20,8 @@ export default function Settings() {
   const [link, setLink] = useState("");
   const [color, setColor] = useState("");
 
-  // pre-fill form with the passed button data
   useEffect(() => {
     if (location.state) {
-      console.log(location.state);
       const { id, title, link, color } = location.state;
       setId(id);
       setTitle(title);
@@ -36,31 +35,11 @@ export default function Settings() {
     const payload = { id, title, link, color };
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/buttons/upload", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
-
-      if (response.ok) {
-        navigate("/", { state: "Button successfully uploaded!" });
-      } else {
-        const errorData = await response.json();
-        navigate("/", { state: "Error uploading button!" });
-
-        if (errorData.errors) {
-          navigate("/", {
-            state:
-              "Validation Errors: " +
-              Object.values(errorData.errors).join(", "),
-          });
-        }
-      }
+      await updateButton(payload);
+      navigate("/", { state: "Button successfully uploaded!" });
     } catch (error) {
-      console.error("An unexpected error occurred:", error);
-      alert("An unexpected error occurred while uploading the button.");
+      console.error("Error uploading button:", error);
+      alert(error.message || "Error uploading button.");
     }
   };
 
@@ -70,29 +49,15 @@ export default function Settings() {
     );
     if (confirmed) {
       try {
-        const response = await fetch(
-          `http://127.0.0.1:8000/api/buttons/${id}`,
-          {
-            method: "DELETE",
-          }
-        );
-
-        if (response.ok) {
-          navigate("/", { state: "Button successfully deleted!" });
-        } else {
-          const errorData = await response.json();
-          navigate("/", { state: "Error deleting button!" });
-
-          if (errorData.message) {
-            navigate("/", { state: errorData.message });
-          }
-        }
+        await deleteButton(id);
+        navigate("/", { state: "Button successfully deleted!" });
       } catch (error) {
-        console.error("An unexpected error occurred:", error);
-        alert("An unexpected error occurred while deleting the button.");
+        console.error("Error deleting button:", error);
+        alert(error.message || "Error deleting button.");
       }
     }
   };
+
   return (
     <>
       <Header />
@@ -151,15 +116,11 @@ export default function Settings() {
                   className="w-full p-2 border border-gray-300 rounded-md"
                 >
                   <option value="">Select a color</option>
-                  <option value="red">Red</option>
-                  <option value="blue">Blue</option>
-                  <option value="green">Green</option>
-                  <option value="yellow">Yellow</option>
-                  <option value="purple">Purple</option>
-                  <option value="pink">Pink</option>
-                  <option value="indigo">Indigo</option>
-                  <option value="orange">Orange</option>
-                  <option value="teal">Teal</option>
+                  {colors.map((colorOption) => (
+                    <option key={colorOption.value} value={colorOption.value}>
+                      {colorOption.label}
+                    </option>
+                  ))}
                 </select>
               </div>
             </div>
@@ -185,7 +146,6 @@ export default function Settings() {
           </form>
         </div>
       </main>
-
       <Footer />
     </>
   );

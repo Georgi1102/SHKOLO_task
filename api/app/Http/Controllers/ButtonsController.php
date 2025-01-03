@@ -21,6 +21,7 @@ class ButtonsController
 
     public function upload(Request $request)
     {
+        //defined rules for the request
         $validator = Validator::make($request->all(), [
             'id' => 'required|exists:buttons,id',
             'title' => 'required',

@@ -1,20 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { fetchButtons } from "../handlers/handleFetch/fetch";
 
-export default function Buttons() {
+export default function Button() {
   const [buttons, setButtons] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchButtons = async () => {
+    const getButtons = async () => {
       try {
-        const response = await fetch("http://127.0.0.1:8000/api/buttons");
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
+        const data = await fetchButtons();
         mapButtons(data["button"]);
       } catch (err) {
         setError(err.message);
@@ -23,11 +20,10 @@ export default function Buttons() {
       }
     };
 
-    fetchButtons();
+    getButtons();
   }, []);
 
   function mapButtons(buttonsData) {
-    // map buttons data to include title, color, and link
     const buttonDetails = buttonsData.map((button) => ({
       id: button.id,
       title: button.title,
@@ -51,7 +47,7 @@ export default function Buttons() {
 
   return (
     <main className="flex-grow container mx-auto px-4 py-8">
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {buttons.map((button, index) => (
           <div
             key={index}
@@ -59,13 +55,12 @@ export default function Buttons() {
           >
             <a
               href={button.link}
-              className={`w-full h-24 flex items-center justify-center`}
+              className="w-full h-24 flex items-center justify-center"
               target="_blank"
               rel="noopener noreferrer"
-              //can't implement tailwind dynamicly !!!
               style={{ backgroundColor: button.color }}
             >
-              <button className="text-white font-bold text-lg ">
+              <button className="text-white font-bold text-lg">
                 {button.title}
               </button>
             </a>
