@@ -1,0 +1,30 @@
+{
+    "name": "your-project-name/root",
+    "description": "Root composer.json for the Laravel API.",
+    "type": "project",
+    "require": {
+        "composer/installers": "^2.0"
+    },
+    "scripts": {
+        "start": [
+            "php -S localhost:8000 -t api/public"
+        ],
+        "post-install-cmd": [
+            "cd api && composer install"
+        ],
+        "post-update-cmd": [
+            "cd api && composer update"
+        ],
+        "migrate": [
+            "cd api && php artisan migrate"
+        ],
+        "serve": [
+            "cd api && php artisan serve"
+        ]
+    },
+    "config": {
+        "allow-plugins": {
+            "composer/installers": true
+        }
+    }
+}
