@@ -4,8 +4,8 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 
 export default function Settings() {
-  const location = useLocation(); 
-  const navigate = useNavigate(); 
+  const location = useLocation();
+  const navigate = useNavigate();
 
   //if there is no data is passed
   useEffect(() => {
@@ -14,6 +14,7 @@ export default function Settings() {
     }
   }, [location.state, navigate]);
 
+  const [id, setId] = useState();
   const [title, setTitle] = useState("");
   const [link, setLink] = useState("");
   const [color, setColor] = useState("");
@@ -21,18 +22,77 @@ export default function Settings() {
   // pre-fill form with the passed button data
   useEffect(() => {
     if (location.state) {
-      const { title, link, color } = location.state;
+      console.log(location.state);
+      const { id, title, link, color } = location.state;
+      setId(id);
       setTitle(title);
       setLink(link);
       setColor(color);
     }
   }, [location.state]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Settings submitted:", { title, link, color });
+    const payload = { id, title, link, color };
+
+    try {
+      const response = await fetch("http://127.0.0.1:8000/api/buttons/upload", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (response.ok) {
+        navigate("/", { state: "Button successfully uploaded!" });
+      } else {
+        const errorData = await response.json();
+        navigate("/", { state: "Error uploading button!" });
+
+        if (errorData.errors) {
+          navigate("/", {
+            state:
+              "Validation Errors: " +
+              Object.values(errorData.errors).join(", "),
+          });
+        }
+      }
+    } catch (error) {
+      console.error("An unexpected error occurred:", error);
+      alert("An unexpected error occurred while uploading the button.");
+    }
   };
 
+  const handleDelete = async () => {
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this button?"
+    );
+    if (confirmed) {
+      try {
+        const response = await fetch(
+          `http://127.0.0.1:8000/api/buttons/${id}`,
+          {
+            method: "DELETE",
+          }
+        );
+
+        if (response.ok) {
+          navigate("/", { state: "Button successfully deleted!" });
+        } else {
+          const errorData = await response.json();
+          navigate("/", { state: "Error deleting button!" });
+
+          if (errorData.message) {
+            navigate("/", { state: errorData.message });
+          }
+        }
+      } catch (error) {
+        console.error("An unexpected error occurred:", error);
+        alert("An unexpected error occurred while deleting the button.");
+      }
+    }
+  };
   return (
     <>
       <Header />
@@ -110,6 +170,16 @@ export default function Settings() {
                 className="w-full py-2 px-4 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-md"
               >
                 Save Settings
+              </button>
+            </div>
+
+            <div className="mt-4">
+              <button
+                type="submit"
+                onClick={handleDelete}
+                className="w-full py-2 px-4 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-md"
+              >
+                Delete Button
               </button>
             </div>
           </form>

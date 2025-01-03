@@ -29,6 +29,7 @@ export default function Buttons() {
   function mapButtons(buttonsData) {
     // map buttons data to include title, color, and link
     const buttonDetails = buttonsData.map((button) => ({
+      id: button.id,
       title: button.title,
       color: button.color,
       link: button.link,

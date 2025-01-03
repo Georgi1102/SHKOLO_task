@@ -13,4 +13,5 @@ class Button extends Model
         'color',
         'link'
     ];
+    public $timestamps = false;
 }
