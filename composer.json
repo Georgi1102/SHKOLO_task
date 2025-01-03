@@ -3,7 +3,8 @@
     "description": "Root composer.json for the Laravel API.",
     "type": "project",
     "require": {
-        "composer/installers": "^2.0"
+        "composer/installers": "^2.0",
+        "phpseclib/phpseclib": "*"
     },
     "scripts": {
         "start": [
