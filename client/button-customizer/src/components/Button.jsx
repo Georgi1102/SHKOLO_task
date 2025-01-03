@@ -54,10 +54,16 @@ export default function Button() {
             className="relative bg-white p-4 rounded-lg shadow-md flex items-center justify-center"
           >
             <a
-              href={button.link}
+              href={button.link || "#"}
               className="w-full h-24 flex items-center justify-center"
-              target="_blank"
-              rel="noopener noreferrer"
+              target={button.link ? "_blank" : undefined}
+              rel={button.link ? "noopener noreferrer" : undefined}
+              onClick={(e) => {
+                if (!button.link) {
+                  e.preventDefault();
+                  handleSettingsClick(button);
+                }
+              }}
               style={{ backgroundColor: button.color }}
             >
               <button className="text-white font-bold text-lg">
