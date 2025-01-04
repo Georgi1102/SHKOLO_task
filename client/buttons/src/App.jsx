@@ -7,6 +7,8 @@ import {
   Route,
   useNavigate,
 } from "react-router-dom";
+
+console.log(import.meta.env.VITE_API_URL);
 function App() {
   return (
     <div className="min-h-screen flex flex-col bg-gray-100">
