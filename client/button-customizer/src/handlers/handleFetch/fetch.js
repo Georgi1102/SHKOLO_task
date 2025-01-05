@@ -1,8 +1,8 @@
-import { API_URL } from "../constants/api";
+import { BASE_URL } from "../constants/api";
 
 export const fetchButtons = async () => {
   try {
-    const response = await fetch(API_URL);
+    const response = await fetch(BASE_URL);
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
@@ -14,7 +14,7 @@ export const fetchButtons = async () => {
 
 export const updateButton = async (payload) => {
   try {
-    const response = await fetch(`${API_URL}/upload`, {
+    const response = await fetch(`${BASE_URL}/upload`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -34,7 +34,7 @@ export const updateButton = async (payload) => {
 
 export const deleteButton = async (id) => {
   try {
-    const response = await fetch(`${API_URL}/${id}`, {
+    const response = await fetch(`${BASE_URL}/${id}`, {
       method: "DELETE",
     });
 
